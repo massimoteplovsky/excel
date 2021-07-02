@@ -3,22 +3,26 @@ const Codes = {
   END: 90,
 };
 
-const createCell = () => {
-  return `<div class="cell" contenteditable></div>`;
+const createCell = (_, colIndex) => {
+  return `<div class="cell" contenteditable data-col="${colIndex}"></div>`;
 };
 
-const createCol = (item) => {
+const createCol = (item, colIndex) => {
   return `
-      <div class="column">
+      <div class="column" data-type="resizable" data-col="${colIndex}">
         ${item}
+        <div class="col-resize" data-resize="col"></div>
       </div>
     `;
 };
 
 const createRow = (index, content) => {
   return `
-    <div class="row">
-      <div class="row-info">${index}</div>
+    <div class="row" data-type="resizable">
+      <div class="row-info">
+        ${index ? index : ''}
+        ${index && '<div class="row-resize" data-resize="row"></div>'}
+      </div>
       <div class="row-data">${content}</div>
     </div>
     `;

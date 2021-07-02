@@ -35,6 +35,32 @@ class Dom {
     this.$el.append(node);
     return this;
   }
+
+  closest(selector) {
+    return dom(this.$el.closest(selector));
+  }
+
+  getCoords() {
+    return this.$el.getBoundingClientRect();
+  }
+
+  findAll(selector) {
+    return this.$el.querySelectorAll(selector);
+  }
+
+  css(styles = {}) {
+    const stylesString = Object.entries(styles)
+      .map(([rule, property]) => `${rule}: ${property};`)
+      .join(' ');
+
+    console.log(stylesString);
+
+    this.$el.style.cssText += stylesString;
+  }
+
+  get data() {
+    return this.$el.dataset;
+  }
 }
 
 export const dom = (selector) => {
