@@ -3,8 +3,14 @@ const Codes = {
   END: 90,
 };
 
-const createCell = (_, colIndex) => {
-  return `<div class="cell" contenteditable data-col="${colIndex}"></div>`;
+const createCell = (rowIndex, colIndex) => {
+  return `<div 
+            class="cell" 
+            contenteditable 
+            data-col="${colIndex}" 
+            data-type="cell"
+            data-id="${rowIndex}:${colIndex}">
+          </div>`;
 };
 
 const createCol = (item, colIndex) => {
@@ -40,7 +46,10 @@ export const createTableTemplate = (rowCount = 15) => {
   rows.push(createRow('', cols));
 
   for (let i = 0; i < rowCount; i++) {
-    const cells = new Array(colCount).fill('').map(createCell).join('');
+    const cells = new Array(colCount)
+      .fill('')
+      .map((_, col) => createCell(i, col))
+      .join('');
     rows.push(createRow(i + 1, cells));
   }
   return rows.join('');
