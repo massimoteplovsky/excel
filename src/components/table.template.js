@@ -3,22 +3,32 @@ const Codes = {
   END: 90,
 };
 
-const createCell = () => {
-  return `<div class="cell" contenteditable></div>`;
+const createCell = (rowIndex, colIndex) => {
+  return `<div 
+            class="cell" 
+            contenteditable 
+            data-col="${colIndex}" 
+            data-type="cell"
+            data-id="${rowIndex}:${colIndex}">
+          </div>`;
 };
 
-const createCol = (item) => {
+const createCol = (item, colIndex) => {
   return `
-      <div class="column">
+      <div class="column" data-type="resizable" data-col="${colIndex}">
         ${item}
+        <div class="col-resize" data-resize="col"></div>
       </div>
     `;
 };
 
 const createRow = (index, content) => {
   return `
-    <div class="row">
-      <div class="row-info">${index}</div>
+    <div class="row" data-type="resizable">
+      <div class="row-info">
+        ${index ? index : ''}
+        ${index && '<div class="row-resize" data-resize="row"></div>'}
+      </div>
       <div class="row-data">${content}</div>
     </div>
     `;
@@ -36,7 +46,10 @@ export const createTableTemplate = (rowCount = 15) => {
   rows.push(createRow('', cols));
 
   for (let i = 0; i < rowCount; i++) {
-    const cells = new Array(colCount).fill('').map(createCell).join('');
+    const cells = new Array(colCount)
+      .fill('')
+      .map((_, col) => createCell(i, col))
+      .join('');
     rows.push(createRow(i + 1, cells));
   }
   return rows.join('');
