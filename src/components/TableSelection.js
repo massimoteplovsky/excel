@@ -16,6 +16,10 @@ export class TableSelection {
     this.current = $el;
   }
 
+  getSelectedIds() {
+    return this.group.map((cell) => cell.data.id);
+  }
+
   selectGroup($group) {
     this.clear();
     this.group = $group;
