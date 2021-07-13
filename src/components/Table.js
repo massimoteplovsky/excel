@@ -1,21 +1,20 @@
 import { ExcelComponent } from '../core/ExcelComponent';
-import { range, nextSelector } from '../core/utils';
+import { range, nextSelector, parse } from '../core/utils';
 import { createTableTemplate } from './table.template';
 import { dom } from '../core/dom';
 import { TableSelection } from './TableSelection';
+import {
+  applyStyle,
+  changeStyles,
+  changeText,
+  tableResize,
+} from '../store/actions';
 
 export class Table extends ExcelComponent {
   constructor($root, options) {
     super($root, {
       name: 'Table',
-      listeners: [
-        'click',
-        'mousedown',
-        'mousemove',
-        'mouseup',
-        'keydown',
-        'input',
-      ],
+      listeners: ['click', 'mousedown', 'keydown', 'input'],
       ...options,
     });
     this.$root = $root;
@@ -26,7 +25,7 @@ export class Table extends ExcelComponent {
   static className = 'excel__table';
 
   toHTML() {
-    return createTableTemplate(this.rowsCount);
+    return createTableTemplate(this.rowsCount, this.$getState());
   }
 
   prepare() {
@@ -40,11 +39,21 @@ export class Table extends ExcelComponent {
     this.selection.select(selectedCell);
 
     this.$emit('table:selection', selectedCell);
-    this.$on('formula:input', (text) => {
-      this.selection.current.text(text);
+    this.$on('formula:input', (value) => {
+      console.log(value);
+      this.selection.current.attr('data-value', value);
+      this.selection.current.text(parse(value));
+      this.updateTextInStore(value);
     });
+
     this.$on('formula:done', () => {
       this.selection.current.focus();
+    });
+
+    this.$on('toolbar:styleChanged', (styles) => {
+      this.selection.group.forEach((cell) => cell.css(styles));
+      const ids = this.selection.getSelectedIds();
+      this.$dispatch(applyStyle({ value: styles, ids }));
     });
   }
 
@@ -91,6 +100,14 @@ export class Table extends ExcelComponent {
           $parent.css({ height: value + 'px' });
         }
 
+        this.$dispatch(
+          tableResize({
+            value,
+            resizerType,
+            id: $parent.data[resizerType],
+          })
+        );
+
         $resizer.css({ opacity: 0, bottom: 0, right: 0 });
       };
     }
@@ -116,6 +133,16 @@ export class Table extends ExcelComponent {
       } else {
         this.selection.select($target);
         this.$emit('table:selection', $target);
+        this.$dispatch(
+          changeStyles(
+            $target.getStyles([
+              'fontWeight',
+              'textDecoration',
+              'textAlign',
+              'fontStyle',
+            ])
+          )
+        );
       }
     }
   }
@@ -141,15 +168,16 @@ export class Table extends ExcelComponent {
     }
   }
 
-  onMousemove() {
-    console.log('onMousemove');
-  }
-
-  onMouseup() {
-    console.log('onMouseup');
+  updateTextInStore(value) {
+    this.$dispatch(
+      changeText({
+        id: this.selection.current.id(),
+        value,
+      })
+    );
   }
 
   onInput(e) {
-    this.$emit('table:input', dom(e.target));
+    this.updateTextInStore(dom(e.target).text());
   }
 }

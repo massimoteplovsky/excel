@@ -28,3 +28,64 @@ export const nextSelector = (key, row, col, rowsCount, colsCount) => {
 
   return `[data-id="${row}:${col}"]`;
 };
+
+export const storage = (key, data = null) => {
+  if (!data) {
+    return JSON.parse(localStorage.getItem(key));
+  }
+
+  localStorage.setItem(key, JSON.stringify(data));
+};
+
+export const deepEqual = (a, b) => {
+  if (a === b) return true;
+
+  if (
+    a === null ||
+    typeof a !== 'object' ||
+    b === null ||
+    typeof b !== 'object'
+  ) {
+    return false;
+  }
+
+  const keysA = Object.keys(a);
+  const keysB = Object.keys(b);
+
+  if (keysA.length !== keysB.length) return false;
+
+  for (const key of keysA) {
+    if (!keysB.includes(key) || !deepEqual(a[key], b[key])) return false;
+  }
+
+  return true;
+};
+
+export const isEqual = (a, b) => {
+  if (typeof a === 'object' && typeof b === 'object') return deepEqual(a, b);
+  return a === b;
+};
+
+export const debounce = (fn, wait) => {
+  let timeout;
+  return (...args) => {
+    const later = () => {
+      clearTimeout(timeout);
+      fn(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+};
+
+export const parse = (value = '') => {
+  if (value.startsWith('=')) {
+    try {
+      return eval(value.slice(1));
+    } catch (e) {
+      return value;
+    }
+  }
+
+  return value;
+};
