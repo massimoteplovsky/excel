@@ -4,6 +4,7 @@ import {
   APPLY_STYLE,
   CHANGE_STYLE,
   CHANGE_TITLE,
+  CHNAGE_DATE,
 } from './types';
 
 export const tableResize = (payload) => {
@@ -38,5 +39,11 @@ export const changeTableTitle = (payload) => {
   return {
     type: CHANGE_TITLE,
     payload,
+  };
+};
+
+export const changeDate = () => {
+  return {
+    type: CHNAGE_DATE,
   };
 };

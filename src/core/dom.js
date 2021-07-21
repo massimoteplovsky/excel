@@ -38,7 +38,7 @@ class Dom {
   }
 
   clear() {
-    this.toHTML('');
+    this.html('');
     return this;
   }
 

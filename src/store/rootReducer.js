@@ -4,6 +4,7 @@ import {
   CHANGE_STYLE,
   APPLY_STYLE,
   CHANGE_TITLE,
+  CHNAGE_DATE,
 } from './types';
 
 export const rootReducer = (state, { type, payload = null }) => {
@@ -39,6 +40,8 @@ export const rootReducer = (state, { type, payload = null }) => {
       return { ...state, cellStyle: { ...state.cellStyle, ...cells } };
     case CHANGE_TITLE:
       return { ...state, title: payload };
+    case CHNAGE_DATE:
+      return { ...state, date: Date.now() };
     default:
       return state;
   }
